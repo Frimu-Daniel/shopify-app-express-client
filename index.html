@@ -3,10 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg: #f7f8fc;
+            --text: #17233b;
+            --muted: #5c6b8a;
+            --surface: #ffffff;
+            --border: #dbe2f1;
+            --accent: #1f6feb;
+            --accent-soft: #dbeafe;
+            --error: #b42318;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+            background: radial-gradient(circle at top right, #e8efff 0%, var(--bg) 55%);
+            color: var(--text);
+            padding: 32px 16px;
+        }
+
+        .app-shell {
+            width: min(760px, 100%);
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        h1 {
+            margin: 0 0 20px;
+            font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+        }
+
+        ul[data-products-list] {
+            list-style: none;
+            margin: 20px 0 0;
+            padding: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        ul[data-products-list] li {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fcfdff;
+        }
+
+        .status {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .status.error {
+            color: var(--error);
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: #1a3f7a;
+            font-weight: 600;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(31, 111, 235, 0.25);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
     <script src="main.js" defer></script>
     <title>Document</title>
 </head>
 <body>
-    <h1>Shopify App with Express</h1>
+    <main class="app-shell" id="app">
+        <h1>Shopify App with Express</h1>
+    </main>
 </body>
 </html>

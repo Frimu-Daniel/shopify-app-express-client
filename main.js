@@ -1,4 +1,36 @@
 const BASE_URL = 'https://shopify-app-express-server.vercel.app';
+const appRoot = document.querySelector('#app') || document.body;
+
+function clearStatusNodes() {
+    appRoot.querySelectorAll('[data-loading], [data-error]').forEach((node) => {
+        node.remove();
+    });
+}
+
+function showLoading() {
+    const existingLoading = appRoot.querySelector('[data-loading]');
+    if (existingLoading) {
+        return;
+    }
+
+    const loading = document.createElement('div');
+    loading.className = 'loading';
+    loading.dataset.loading = 'true';
+
+    const spinner = document.createElement('span');
+    spinner.className = 'spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+
+    const text = document.createElement('span');
+    text.textContent = 'Loading products...';
+
+    loading.append(spinner, text);
+    appRoot.appendChild(loading);
+}
+
+function hideLoading() {
+    appRoot.querySelector('[data-loading]')?.remove();
+}
 
 function getProductsFromPayload(payload) {
     if (Array.isArray(payload)) {
@@ -25,7 +57,9 @@ function getProductsFromPayload(payload) {
 }
 
 function renderProducts(products) {
-    const existingList = document.querySelector('ul[data-products-list]');
+    clearStatusNodes();
+
+    const existingList = appRoot.querySelector('ul[data-products-list]');
     if (existingList) {
         existingList.remove();
     }
@@ -45,13 +79,19 @@ function renderProducts(products) {
         ul.appendChild(li);
     }
 
-    document.body.appendChild(ul);
+    appRoot.appendChild(ul);
 }
 
 function renderError(error) {
+    clearStatusNodes();
+
+    appRoot.querySelector('ul[data-products-list]')?.remove();
+
     const message = document.createElement('p');
+    message.className = 'status error';
+    message.dataset.error = 'true';
     message.textContent = error.message;
-    document.body.appendChild(message);
+    appRoot.appendChild(message);
 }
 
 async function fetchProducts() {
@@ -80,12 +120,16 @@ async function fetchProducts() {
     return payload;
 }
 
+showLoading();
+
 fetchProducts()
     .then((payload) => {
+        hideLoading();
         const products = getProductsFromPayload(payload);
         renderProducts(products);
     })
     .catch((error) => {
+        hideLoading();
         console.error(error);
         renderError(error);
     });
