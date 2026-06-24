@@ -1,5 +1,59 @@
 const BASE_URL = 'https://shopify-app-express-server.vercel.app';
 
+function getProductsFromPayload(payload) {
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+
+    if (Array.isArray(payload?.products)) {
+        return payload.products;
+    }
+
+    if (Array.isArray(payload?.data?.data?.products?.edges)) {
+        return payload.data.data.products.edges
+            .map((edge) => edge?.node)
+            .filter(Boolean);
+    }
+
+    if (Array.isArray(payload?.data?.products?.edges)) {
+        return payload.data.products.edges
+            .map((edge) => edge?.node)
+            .filter(Boolean);
+    }
+
+    return [];
+}
+
+function renderProducts(products) {
+    const existingList = document.querySelector('ul[data-products-list]');
+    if (existingList) {
+        existingList.remove();
+    }
+
+    const ul = document.createElement('ul');
+    ul.dataset.productsList = 'true';
+
+    products.forEach((product) => {
+        const li = document.createElement('li');
+        li.textContent = product?.title || product?.name || 'Untitled product';
+        ul.appendChild(li);
+    });
+
+    if (products.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No products found';
+        ul.appendChild(li);
+    }
+
+    document.body.appendChild(ul);
+}
+
+function renderError(error) {
+    const message = document.createElement('p');
+    message.textContent = error.message;
+    document.body.appendChild(message);
+}
+
 async function fetchProducts() {
     const headers = {};
     const url = new URL(window.location.href);
@@ -27,5 +81,11 @@ async function fetchProducts() {
 }
 
 fetchProducts()
-    .then(console.log)
-    .catch(console.error);
+    .then((payload) => {
+        const products = getProductsFromPayload(payload);
+        renderProducts(products);
+    })
+    .catch((error) => {
+        console.error(error);
+        renderError(error);
+    });
